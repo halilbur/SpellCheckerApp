@@ -4,14 +4,13 @@
  */
 package com.mycompany.mavenproject1;
 
-import javax.swing.JOptionPane;
+import javax.swing.*;
 import javax.swing.plaf.basic.BasicTextUI;
-import javax.swing.text.Highlighter;
-import javax.swing.text.DefaultHighlighter;
-import javax.swing.text.DefaultHighlighter.DefaultHighlightPainter;
 import javax.swing.text.BadLocationException;
-import java.awt.Color;
+import javax.swing.text.DefaultHighlighter;
+import javax.swing.text.Highlighter;
 import javax.swing.text.Highlighter.HighlightPainter;
+import java.awt.*;
 
 /**
  * @author halil
@@ -19,6 +18,7 @@ import javax.swing.text.Highlighter.HighlightPainter;
 public class spellCheckerDesign extends javax.swing.JFrame {
 
     String suggestion;
+    String result;
     BinarySearchTree<String> matches = new BinarySearchTree<>();
 
     /**
@@ -26,7 +26,6 @@ public class spellCheckerDesign extends javax.swing.JFrame {
      */
     public spellCheckerDesign() {
         initComponents();
-
     }
 
     public void spellChecker(String inputWord) {
@@ -34,15 +33,13 @@ public class spellCheckerDesign extends javax.swing.JFrame {
 
         dictionary.loadDictionary("src/main/java/com/mycompany/mavenproject1/output.txt");
 
-        //System.out.println("Enter a word to check spelling:");
-        //suggestion = dictionary.checkSpellingReturn(inputWord);
-        matches = dictionary.findClosestMatches(inputWord);
-        suggestion = matches.findMin();
-        //bring the nodes which key value is up to 2
-
+        BinarySearchTree<String> suggestions = dictionary.getSuggestions(inputWord, Integer.parseInt(spinner1.getValue().toString()));
+        //suggestion = suggestions.findMin();
+        suggestion = suggestions.getValues();
         txtArea.append("The word is misspelled. Did you mean '" + suggestion + "'?\n");
         txtArea.append("The closest matches are:\n");
-        txtArea.append(matches.getNodesWithKeyUpTo(Integer.parseInt(spinner1.getValue().toString())));
+
+        txtArea.setText(suggestions.getValues());
 
     }
 
@@ -114,7 +111,7 @@ public class spellCheckerDesign extends javax.swing.JFrame {
         });
         jPanel1.add(btn_check, new org.netbeans.lib.awtextra.AbsoluteConstraints(520, 10, -1, 40));
 
-        spinner1.setModel(new javax.swing.SpinnerNumberModel(4, 1, 10, 1));
+        spinner1.setModel(new javax.swing.SpinnerNumberModel(2, 1, 10, 1));
         spinner1.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
                 spinner1StateChanged(evt);
@@ -157,7 +154,7 @@ public class spellCheckerDesign extends javax.swing.JFrame {
 
         JOptionPane.showMessageDialog(null, "The word will be auto-complete!", "Information", JOptionPane.INFORMATION_MESSAGE);
         txtArea.setText("The word is spelled correctly.");
-        txt_input.setText(suggestion);
+        txt_input.setText(result);
 
     }//GEN-LAST:event_btn_autocompleteActionPerformed
 
@@ -176,9 +173,10 @@ public class spellCheckerDesign extends javax.swing.JFrame {
             spellChecker(s);
             sb.append(suggestion + " ");
         }
-        String result = sb.toString().trim();
+        result = sb.toString().trim();
         txtArea.setText(result);
-        if (txt_input.getText().equals(suggestion)) {
+
+        if (txt_input.getText().equals(result)) {
             txtArea.setText("The word is spelled correctly.");
             JOptionPane.showMessageDialog(null, "The word is spelled correctly.", "Information", JOptionPane.INFORMATION_MESSAGE);
 
@@ -217,7 +215,7 @@ public class spellCheckerDesign extends javax.swing.JFrame {
     private void spinner1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_spinner1StateChanged
         // TODO add your handling code here:
         //txtArea.append(spinner1.getValue().toString());
-        txtArea.append(matches.getNodesWithKeyUpToInitial(Integer.parseInt(spinner1.getValue().toString())).toString() + "\n");
+        //txtArea.append(matches.getNodesWithKeyUpToInitial(Integer.parseInt(spinner1.getValue().toString())).toString() + "\n");
     }//GEN-LAST:event_spinner1StateChanged
 
     /**

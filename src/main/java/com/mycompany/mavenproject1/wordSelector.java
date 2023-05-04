@@ -1,7 +1,9 @@
 package com.mycompany.mavenproject1;
 
 import java.io.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class wordSelector {
     public static List<String> chooseRandomWords(String filename) {
@@ -24,7 +26,7 @@ public class wordSelector {
         Collections.shuffle(words);
         List<String> chosenWords = words.subList(0, Math.min(words.size(), 1000));
         try {
-            BufferedWriter writer = new BufferedWriter(new FileWriter("output.txt"));
+            BufferedWriter writer = new BufferedWriter(new FileWriter("src/main/java/com/mycompany/mavenproject1/output.txt"));
             for (String word : chosenWords) {
                 writer.write(word);
                 writer.newLine();
@@ -38,7 +40,7 @@ public class wordSelector {
     }
 
     public static void main(String[] args) {
-        List<String> words = chooseRandomWords("words2.txt");
+        List<String> words = chooseRandomWords("src/main/java/com/mycompany/mavenproject1/words2.txt");
         System.out.println("Chosen words: " + words);
 
     }
