@@ -1,6 +1,6 @@
 package com.mycompany.mavenproject1;
 
-public class Node<T extends Comparable<T>> implements Comparable<Node<T>> {
+public class Node<T extends Comparable<T>> {
     T data;
     Node<T> right;
     Node<T> left;
@@ -9,14 +9,10 @@ public class Node<T extends Comparable<T>> implements Comparable<Node<T>> {
     public Node(T data) {
         this.data = data;
     }
-
+    // node constructor with int key
     public Node(int key, T data) {
         this.key = key;
         this.data = data;
     }
 
-    @Override
-    public int compareTo(Node<T> o) {
-        return 0;
-    }
 }

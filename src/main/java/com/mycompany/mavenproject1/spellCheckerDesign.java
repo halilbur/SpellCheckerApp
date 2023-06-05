@@ -19,7 +19,7 @@ public class spellCheckerDesign extends javax.swing.JFrame {
 
     String suggestion;
     String result;
-    BinarySearchTree<String> matches = new BinarySearchTree<>();
+    String closest;
 
     /**
      * Creates new form NewJFrame
@@ -31,15 +31,12 @@ public class spellCheckerDesign extends javax.swing.JFrame {
     public void spellChecker(String inputWord) {
         BinarySearchTree<String> dictionary = new BinarySearchTree<>();
 
-        dictionary.loadDictionary("src/main/java/com/mycompany/mavenproject1/output.txt");
+        dictionary.loadDictionary2("/output.txt");
 
         BinarySearchTree<String> suggestions = dictionary.getSuggestions(inputWord, Integer.parseInt(spinner1.getValue().toString()));
-        //suggestion = suggestions.findMin();
-        suggestion = suggestions.getValues();
-        txtArea.append("The word is misspelled. Did you mean '" + suggestion + "'?\n");
-        txtArea.append("The closest matches are:\n");
 
-        txtArea.setText(suggestions.getValues());
+        suggestion = suggestions.getValues();
+        closest = suggestions.findMin();
 
     }
 
@@ -53,7 +50,6 @@ public class spellCheckerDesign extends javax.swing.JFrame {
     private void initComponents() {
 
         jPanel1 = new javax.swing.JPanel();
-        txt_input = new javax.swing.JTextField();
         btn_clear = new javax.swing.JButton();
         btn_autocomplete = new javax.swing.JButton();
         btn_check = new javax.swing.JButton();
@@ -64,28 +60,13 @@ public class spellCheckerDesign extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Spell Checker");
+        setMinimumSize(new java.awt.Dimension(550, 510));
+        setPreferredSize(new java.awt.Dimension(550, 510));
         setResizable(false);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jPanel1.setBackground(new java.awt.Color(255, 204, 102));
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        txt_input.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txt_inputActionPerformed(evt);
-            }
-        });
-        txt_input.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
-            public void propertyChange(java.beans.PropertyChangeEvent evt) {
-                txt_inputPropertyChange(evt);
-            }
-        });
-        txt_input.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyTyped(java.awt.event.KeyEvent evt) {
-                txt_inputKeyTyped(evt);
-            }
-        });
-        jPanel1.add(txt_input, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 260, 40));
 
         btn_clear.setText("Clear");
         btn_clear.addActionListener(new java.awt.event.ActionListener() {
@@ -93,7 +74,7 @@ public class spellCheckerDesign extends javax.swing.JFrame {
                 btn_clearActionPerformed(evt);
             }
         });
-        jPanel1.add(btn_clear, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 10, 60, 40));
+        jPanel1.add(btn_clear, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 10, 120, 40));
 
         btn_autocomplete.setText("Auto-complete");
         btn_autocomplete.addActionListener(new java.awt.event.ActionListener() {
@@ -101,7 +82,7 @@ public class spellCheckerDesign extends javax.swing.JFrame {
                 btn_autocompleteActionPerformed(evt);
             }
         });
-        jPanel1.add(btn_autocomplete, new org.netbeans.lib.awtextra.AbsoluteConstraints(390, 10, 120, 40));
+        jPanel1.add(btn_autocomplete, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 10, 130, 40));
 
         btn_check.setText("Check");
         btn_check.addActionListener(new java.awt.event.ActionListener() {
@@ -109,7 +90,7 @@ public class spellCheckerDesign extends javax.swing.JFrame {
                 btn_checkActionPerformed(evt);
             }
         });
-        jPanel1.add(btn_check, new org.netbeans.lib.awtextra.AbsoluteConstraints(520, 10, -1, 40));
+        jPanel1.add(btn_check, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 10, 130, 40));
 
         spinner1.setModel(new javax.swing.SpinnerNumberModel(2, 1, 10, 1));
         spinner1.addChangeListener(new javax.swing.event.ChangeListener() {
@@ -117,15 +98,24 @@ public class spellCheckerDesign extends javax.swing.JFrame {
                 spinner1StateChanged(evt);
             }
         });
-        jPanel1.add(spinner1, new org.netbeans.lib.awtextra.AbsoluteConstraints(600, 10, 80, 40));
+        jPanel1.add(spinner1, new org.netbeans.lib.awtextra.AbsoluteConstraints(450, 10, 80, 40));
 
-        getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 700, 70));
+        getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 540, 70));
 
         jPanel4.setBackground(new java.awt.Color(255, 255, 255));
         jPanel4.setLayout(new javax.swing.BoxLayout(jPanel4, javax.swing.BoxLayout.LINE_AXIS));
 
         txtArea.setColumns(20);
         txtArea.setRows(5);
+        txtArea.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                txtAreaMouseClicked(evt);
+            }
+
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                txtAreaMousePressed(evt);
+            }
+        });
         jScrollPane2.setViewportView(txtArea);
 
         jPanel4.add(jScrollPane2);
@@ -139,84 +129,105 @@ public class spellCheckerDesign extends javax.swing.JFrame {
     private void btn_clearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_clearActionPerformed
         // TODO add your handling code here:
 
-        if (txt_input.getText().equals("")) {
+        if (txtArea.getText().equals("")) {
             JOptionPane.showMessageDialog(null, "Text area is already empty!", "Warning!", JOptionPane.WARNING_MESSAGE);
         }
-        txt_input.setText("");
+        txtArea.setText("");
 
     }//GEN-LAST:event_btn_clearActionPerformed
 
     private void btn_autocompleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_autocompleteActionPerformed
         // TODO add your handling code here:
-        if (txt_input.getText().equals("")) {
+        if (txtArea.getText().equals("")) {
             JOptionPane.showMessageDialog(null, "There is no text to auto-complete!", "Warning!", JOptionPane.WARNING_MESSAGE);
         }
 
         JOptionPane.showMessageDialog(null, "The word will be auto-complete!", "Information", JOptionPane.INFORMATION_MESSAGE);
-        txtArea.setText("The word is spelled correctly.");
-        txt_input.setText(result);
+        //txtArea.setText("The word is spelled correctly.");
+        txtArea.setText(result);
 
     }//GEN-LAST:event_btn_autocompleteActionPerformed
 
     private void btn_checkActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_checkActionPerformed
         // TODO add your handling code here:
+        String text_area = txtArea.getText();
+        String[] words = text_area.split("\\s+");
+        text_area = text_area.toLowerCase();
+        text_area = text_area.replaceAll("[^a-zA-Z\\s]", "");
+        Highlighter h = txtArea.getHighlighter();
 
-        Highlighter h = txt_input.getHighlighter();
-        if (txt_input.getText().equals("")) {
-            JOptionPane.showMessageDialog(null, "Text area is already empty!", "Warning!", JOptionPane.WARNING_MESSAGE);
-        }
-        //spellChecker(txt_input.getText());
-        String text = txt_input.getText();
-        String[] words = text.split("\\s+");
         StringBuilder sb = new StringBuilder();
         for (String s : words) {
             spellChecker(s);
-            sb.append(suggestion + " ");
+            if (closest != null) {
+                sb.append(closest + " ");
+                try {
+
+                    HighlightPainter red = new DefaultHighlighter.DefaultHighlightPainter(Color.red);
+
+                    int i = text_area.indexOf(s);
+                    h.addHighlight(i, i + s.length(), red);
+
+                } catch (BadLocationException ex) {
+                    System.err.println("Error " + ex.getMessage());
+                }
+            } else {
+                // add a green highlight to show that the word is spelled correctly
+                sb.append(s + " ");
+                HighlightPainter green = new DefaultHighlighter.DefaultHighlightPainter(Color.green);
+                try {
+                    int i = text_area.indexOf(s);
+                    h.addHighlight(i, i + s.length(), green);
+                } catch (BadLocationException ex) {
+                    System.err.println("Error " + ex.getMessage());
+                }
+            }
+            //sb.append(closest + " ");
         }
         result = sb.toString().trim();
-        txtArea.setText(result);
 
-        if (txt_input.getText().equals(result)) {
-            txtArea.setText("The word is spelled correctly.");
+        if (txtArea.getText().equals("")) {
+            JOptionPane.showMessageDialog(null, "Text area is already empty!", "Warning!", JOptionPane.WARNING_MESSAGE);
+        } else if (txtArea.getText().equals(result)) {
+
             JOptionPane.showMessageDialog(null, "The word is spelled correctly.", "Information", JOptionPane.INFORMATION_MESSAGE);
 
             h.removeAllHighlights();
 
         } else {
-            try {
 
-                //h.addHighlight(0, 4, DefaultHighlighter.DefaultPainter);//highlight first 4 character
-                HighlightPainter red = new DefaultHighlighter.DefaultHighlightPainter(Color.red);
-                h.addHighlight(0, text.length(), red);//highlight last four character
-            } catch (BadLocationException ex) {
-                System.err.println("Error " + ex.getMessage());
-            }
         }
 
     }//GEN-LAST:event_btn_checkActionPerformed
 
-    private void txt_inputActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txt_inputActionPerformed
-        // TODO add your handling code here:
-
-
-    }//GEN-LAST:event_txt_inputActionPerformed
-
-    private void txt_inputKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txt_inputKeyTyped
-        // TODO add your handling code here:
-        Highlighter h = new BasicTextUI.BasicHighlighter();
-        txt_input.setHighlighter(h);
-    }//GEN-LAST:event_txt_inputKeyTyped
-
-    private void txt_inputPropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_txt_inputPropertyChange
-        // TODO add your handling code here:
-        txtArea.setText("");
-    }//GEN-LAST:event_txt_inputPropertyChange
-
     private void spinner1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_spinner1StateChanged
         // TODO add your handling code here:
-        //txtArea.append(spinner1.getValue().toString());
-        //txtArea.append(matches.getNodesWithKeyUpToInitial(Integer.parseInt(spinner1.getValue().toString())).toString() + "\n");
     }//GEN-LAST:event_spinner1StateChanged
+
+    private void txtAreaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_txtAreaMouseClicked
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtAreaMouseClicked
+
+    private void txtAreaMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_txtAreaMousePressed
+        // TODO add your handling code here:
+        //result = sb.toString().trim();
+        if (SwingUtilities.isRightMouseButton(evt)) {
+            //show pop up menu
+            JPopupMenu popup = new JPopupMenu();
+            String[] words = txtArea.getText().split("\\s+");
+            //StringBuilder sb = new StringBuilder();
+            spellChecker(txtArea.getSelectedText());
+            String[] wordle = suggestion.split(",");
+            for (String s : wordle) {
+                JMenuItem item = new JMenuItem(s);
+                popup.add(item);
+            }
+            txtArea.setComponentPopupMenu(popup);
+            popup.show(txtArea, evt.getX(), evt.getY());
+
+        }
+
+    }//GEN-LAST:event_txtAreaMousePressed
 
     /**
      * @param args the command line arguments
@@ -263,6 +274,5 @@ public class spellCheckerDesign extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JSpinner spinner1;
     private javax.swing.JTextArea txtArea;
-    private javax.swing.JTextField txt_input;
     // End of variables declaration//GEN-END:variables
 }

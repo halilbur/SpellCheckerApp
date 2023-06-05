@@ -1,8 +1,6 @@
 package com.mycompany.mavenproject1;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 
 public class BinarySearchTree<T extends Comparable<T>> {
 
@@ -10,12 +8,9 @@ public class BinarySearchTree<T extends Comparable<T>> {
 
     public static void main(String[] args) {
         BinarySearchTree<String> tree = new BinarySearchTree<>();
-        tree.loadDictionary("src/main/java/com/mycompany/mavenproject1/output.txt");
-
-        BinarySearchTree<String> suggestions = tree.getSuggestions("uza", 2);
-        suggestions.inorder();
-        System.out.println(suggestions.findMin());
-
+        BinarySearchTree<String> suggestions = tree.getSuggestions("poziti", 2);
+        String cs = suggestions.findMin();
+        System.out.println(cs);
     }
 
     void loadDictionary(String filename) {
@@ -32,9 +27,25 @@ public class BinarySearchTree<T extends Comparable<T>> {
             e.printStackTrace();
         }
 
+
     }
 
-    public void insertFINAL(T data, String targetWord) {
+    void loadDictionary2(String filename) {
+        try {
+            InputStream inputReader = getClass().getResourceAsStream(filename);
+            assert inputReader != null;
+            BufferedReader reader = new BufferedReader(new InputStreamReader(inputReader));
+            String line;
+            while ((line = reader.readLine()) != null) {
+                insert((T) line);
+            }
+            reader.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void insertWithDistance(T data, String targetWord) {
         root = insertHelper(root, data, targetWord);
     }
 
@@ -113,10 +124,15 @@ public class BinarySearchTree<T extends Comparable<T>> {
             return;
         }
         String s1 = node.data.toString();
-        int distance = LevenshteinDistance.levenshteinDistance(s1, targetWord);
-        if (distance <= maxDistance) {
-            suggestions.insertFINAL(node.data, targetWord);
+        if (s1.equals(targetWord)) {
+            return;
+        } else {
+            int distance = LevenshteinDistance.levenshteinDistance(s1, targetWord);
+            if (distance <= maxDistance) {
+                suggestions.insertWithDistance(node.data, targetWord);
+            }
         }
+
 
         getSuggestionsHelper(node.left, targetWord, suggestions, maxDistance);
         getSuggestionsHelper(node.right, targetWord, suggestions, maxDistance);
